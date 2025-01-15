@@ -33,5 +33,25 @@ namespace APIAUTH.Server.Controllers
                 return Unauthorized("Invalid credentials.");
             }
         }
+
+        [HttpPost("loginSSO")]
+        public async Task<IActionResult> LoginSSO(string authorizationCode)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var tokens = await _authenticationService.AuthenticateWithGoogleAsync(authorizationCode);
+                return Ok(new { idToken = tokens.idToken, accessToken = tokens.accessToken });
+            }
+            catch (Exception ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+        }
+
     }
 }

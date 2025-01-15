@@ -13,7 +13,6 @@ namespace APIAUTH.Aplication.Valitations
         public UserValidator()
         {
             RuleFor(c => c.UserName).NotEmpty();
-            RuleFor(c => c.Email).NotEmpty();
             RuleFor(c => c.Password).MinimumLength(6).NotEmpty();
         }
 

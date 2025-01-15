@@ -5,34 +5,19 @@ using APIAUTH.Aplication.Valitations;
 using APIAUTH.Domain.Entities;
 using APIAUTH.Domain.Repository;
 using AutoMapper;
-using AutoMapper.QueryableExtensions;
-using BCrypt.Net;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Net.Mail;
 
 namespace APIAUTH.Aplication.Services
 {
     public class UserService : IUserService
     {
-        private readonly IRepository<User> _repository;
-        private readonly IUserRepository _userRepository;
+        private readonly IUserRepository _repository;
         private readonly IMapper _mapper;
 
-        public UserService(IRepository<User> repository, IMapper mapper, IUserRepository userRepository)
+        public UserService(IMapper mapper, IUserRepository repository)
         {
             _repository = repository;
             _mapper = mapper;
-            _userRepository = userRepository;
-        }
-
-        public async Task Activate(int id)
-        {
-            var user = await _repository.Get(id);
-            BaseEntityHelper.SetActive(user);
-            await _repository.Update(user);
         }
 
         public async Task<bool> Exists(int id)
@@ -40,89 +25,64 @@ namespace APIAUTH.Aplication.Services
             return await _repository.Get(id) != null;
         }
 
-        public async Task<UserDto> Get(int id)
+        public async Task<UserDto> Save(CollaboratorDto dto)
         {
-            var model = await _repository.Get(id);
-            return _mapper.Map<UserDto>(model);
-        }
+            var user = new User();
 
-        public async Task Inactivate(int id)
-        {
-            var user = await _repository.Get(id);
-            BaseEntityHelper.SetInactive(user);
-            await _repository.Update(user);
-        }
-
-        public async Task Save(UserDto dto)
-        {
-            if (dto.Id.Equals(0))
+            try
             {
-                var newUser = _mapper.Map<User>(dto);
-                newUser.Password = BCrypt.Net.BCrypt.HashPassword(dto.Password);
-                newUser.PasswordDate = DateTime.Now;
-                BaseEntityHelper.SetCreated(newUser);
-                await _repository.Add(newUser);
-
-                /*
-                 * Encontrar una forma de hacer que la contraseña sea temporal y le pida al usuario que cambia la misma
-                 */
+                MailAddress mail = new MailAddress(dto.Email);
+                user.UserName = mail.User;
+                user.Password = BCrypt.Net.BCrypt.HashPassword(dto.DocumentNamber.ToString());
+                user.IsGenericPassword = true;
+                user.PasswordDate = DateTime.Now;
+                user.StateUser = Domain.Enums.StateUser.Activo;
             }
-            else
+            catch (FormatException ex)
             {
-                var updateUser = _mapper.Map<User>(dto);
-                BaseEntityHelper.SetUpdated(updateUser);
-                await _repository.Update(updateUser);
+                //TODO: Agregar la respuesta de la excepcion
             }
 
+            return _mapper.Map<UserDto>(user);
         }
 
+        //TODO:
         /*
-         * Alerta de vencimiento de contraseña (DEJAR PARA EL FINAL)
-         * Bloqueo del usuario (Nuevo estado me parece)
-         * Desbloqueo del mismo (Se debe cambiar la contraseña)
+         * Alerta de vencimiento de contraseña (DEJAR PARA EL FINAL) con el campo PasswordDate
          */
 
-        public async Task<(bool isValid, string message)> Validate(int? id, UserDto dto)
+        public async Task RecoverPassword(string email, string password)
         {
-            var validations = new List<(bool isValid, string message)>();
-
-            var validator = new UserValidator();
-            var result = await validator.ValidateAsync(dto);
-            validations.Add((result.IsValid, string.Join(Environment.NewLine, result.Errors.Select(x => $"Campo {x.PropertyName} invalido. Error: {x.ErrorMessage}"))));
-
-            return (isValid: validations.All(x => x.isValid),
-                    message: string.Join(Environment.NewLine, validations.Where(x => !x.isValid).Select(x => x.message)));
-        }
-
-
-        public async Task RecoverPassword(string email)
-        {
-            var user = await _userRepository.GetByEmailAsync(email);
-            if (user == null || user.State == Domain.Enums.BaseState.Activo)
+            //TODO: Ver que se puede hacer en este punto para mejorar la seguridad
+            // Quizas mandar por mail para validar la identidad o verificar el mail de la persona con mas datos que solo el email
+            var collaborator = _repository.GetByEmail(email);
+            if (collaborator == null || collaborator.State == Domain.Enums.BaseState.Activo)
             {
                 throw new UnauthorizedAccessException("User is non-existent");
             }
+            var user = await _repository.Get(collaborator.UserId);
 
-            var password = BCrypt.Net.BCrypt.HashPassword(user.UserName);
+            user.Password = BCrypt.Net.BCrypt.HashPassword(password);
             user.PasswordDate = DateTime.Now;
-            BaseEntityHelper.SetUpdated(user);
+            user.IsGenericPassword = false;
             await _repository.Update(user);
-            /*
-             * Encontrar una forma de hacer que la contraseña sea temporal y le pida al usuario que cambia la misma
-             * Enviar un mail indicando cual es la nueva contraseña
-             */
+
         }
 
-        public async Task ChangePassword(string username, string newPassword)
+        public async Task<bool> ChangePassword(UserDto dto)
         {
-            var user = await _userRepository.GetByUsernameAsync(username);
-
-            var password = BCrypt.Net.BCrypt.HashPassword(newPassword);
-            user.PasswordDate = DateTime.Now;
-            BaseEntityHelper.SetUpdated(user);
-            await _repository.Update(user);
+            var user = await _repository.Get(dto.Id);
+            if (user != null)
+            {
+                user.Password = dto.Password;
+                user.PasswordDate = DateTime.Now;
+                user.IsGenericPassword = false;
+                return await _repository.Update(user) != null;
+            }
+            else
+            {
+                return false; //TODO: ver que se puede devolver en este punto
+            }
         }
-
-
     }
 }

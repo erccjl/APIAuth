@@ -9,13 +9,12 @@ using System.Threading.Tasks;
 
 namespace APIAUTH.Aplication.Mapper
 {
-    public class UserProfile : Profile
+    public class CollaboratorProfile:Profile
     {
-        public UserProfile()
+        public CollaboratorProfile()
         {
-            CreateMap<UserDto, User>()
+            CreateMap<CollaboratorDto, Collaborator>()
                 .ReverseMap();
         }
-
     }
 }

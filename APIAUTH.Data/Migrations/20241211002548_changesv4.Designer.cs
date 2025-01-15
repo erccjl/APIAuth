@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace APIAUTH.Data.Migrations
 {
     [DbContext(typeof(AuthContext))]
-    [Migration("20241028141346_2.0.3.newEntities")]
-    partial class _203newEntities
+    [Migration("20241211002548_changesv4")]
+    partial class changesv4
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -33,6 +33,10 @@ namespace APIAUTH.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("BackupEmail")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("CollaboratorTypeId")
                         .HasColumnType("int");
 
@@ -43,6 +47,10 @@ namespace APIAUTH.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("DocumentType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -57,15 +65,14 @@ namespace APIAUTH.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("OrganizationId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Phone")
+                    b.Property<string>("NumberPhone")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Photo")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("StartDate")
@@ -91,7 +98,7 @@ namespace APIAUTH.Data.Migrations
                     b.ToTable("Collaborators");
                 });
 
-            modelBuilder.Entity("APIAUTH.Domain.Entities.CollaboratorTypeEnum", b =>
+            modelBuilder.Entity("APIAUTH.Domain.Entities.CollaboratorType", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -261,16 +268,8 @@ namespace APIAUTH.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("BackupEmail")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<bool>("IsGenericPassword")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Password")
                         .IsRequired()
@@ -279,11 +278,14 @@ namespace APIAUTH.Data.Migrations
                     b.Property<DateTime>("PasswordDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("State")
-                        .HasColumnType("int");
+                    b.Property<string>("RefreshToken")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("UpdatedDate")
+                    b.Property<DateTime?>("RefreshTokenExpiryDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<int>("StateUser")
+                        .HasColumnType("int");
 
                     b.Property<string>("UserName")
                         .IsRequired()
@@ -328,7 +330,7 @@ namespace APIAUTH.Data.Migrations
 
             modelBuilder.Entity("APIAUTH.Domain.Entities.Collaborator", b =>
                 {
-                    b.HasOne("APIAUTH.Domain.Entities.CollaboratorTypeEnum", "CollaboratorTypeEnum")
+                    b.HasOne("APIAUTH.Domain.Entities.CollaboratorType", "CollaboratorType")
                         .WithMany()
                         .HasForeignKey("CollaboratorTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -346,7 +348,7 @@ namespace APIAUTH.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("CollaboratorTypeEnum");
+                    b.Navigation("CollaboratorType");
 
                     b.Navigation("Organization");
 

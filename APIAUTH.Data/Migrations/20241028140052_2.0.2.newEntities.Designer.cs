@@ -91,7 +91,7 @@ namespace APIAUTH.Data.Migrations
                     b.ToTable("Collaborators");
                 });
 
-            modelBuilder.Entity("APIAUTH.Domain.Entities.CollaboratorType", b =>
+            modelBuilder.Entity("APIAUTH.Domain.Entities.CollaboratorTypeEnum", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -328,7 +328,7 @@ namespace APIAUTH.Data.Migrations
 
             modelBuilder.Entity("APIAUTH.Domain.Entities.Collaborator", b =>
                 {
-                    b.HasOne("APIAUTH.Domain.Entities.CollaboratorType", "CollaboratorType")
+                    b.HasOne("APIAUTH.Domain.Entities.CollaboratorTypeEnum", "CollaboratorTypeEnum")
                         .WithMany()
                         .HasForeignKey("CollaboratorTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -346,7 +346,7 @@ namespace APIAUTH.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("CollaboratorType");
+                    b.Navigation("CollaboratorTypeEnum");
 
                     b.Navigation("Organization");
 

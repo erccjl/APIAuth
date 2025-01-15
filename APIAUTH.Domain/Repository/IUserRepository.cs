@@ -7,10 +7,16 @@ using System.Threading.Tasks;
 
 namespace APIAUTH.Domain.Repository
 {
-    public interface IUserRepository : IRepository<User>
+    public interface IUserRepository
     {
-        Task<User> GetByEmailAsync(string email);
+        Task<User> Add(User item);
+        Task<User> Update(User item);
+        Task<User> Get(int id);
+        Collaborator GetByEmail(string email);
         Task<User> GetByUsernameAsync(string username);
         Task<bool> ValidatePasswordAsync(User user, string password);
+        Collaborator GetCollaboratorByIdUser(int id);
+        List<UserRole> GetRoles(int userId);
+        Task<User> GetUserByRefreshTokenAsync(string refreshToken);
     }
 }

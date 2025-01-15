@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 
 namespace APIAUTH.Domain.Enums
 {
-    public enum CollaboratorType
+    public enum StateUser
     {
-        Internal,
-        External
+        Bloqueado,
+        Activo,
+        Eliminado
     }
 }

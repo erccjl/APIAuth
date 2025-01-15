@@ -1,13 +1,13 @@
-﻿using APIAUTH.Domain.Enums;
+﻿using APIAUTH.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace APIAUTH.Domain.Entities
+namespace APIAUTH.Aplication.DTOs
 {
-    public class Collaborator : BaseEntity
+    public class CollaboratorDto : BaseEntityDto
     {
         public string Name { get; set; }
         public string LastName { get; set; }
@@ -17,17 +17,18 @@ namespace APIAUTH.Domain.Entities
         public string? Photo { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
+
         public string Email { get; set; }
         public string BackupEmail { get; set; }
 
         public int CollaboratorTypeId { get; set; }
-        public virtual CollaboratorType CollaboratorType { get; set; }
+        //public CollaboratorTypeDto CollaboratorTypeEnum { get; set; }
 
 
         public int OrganizationId { get; set; }
-        public virtual Organization Organization { get; set; }
+        //public OrganizationDto Organization { get; set; }
 
         public int UserId { get; set; }
-        public virtual User User { get; set; }
+        public UserDto? User { get; set; }
     }
 }

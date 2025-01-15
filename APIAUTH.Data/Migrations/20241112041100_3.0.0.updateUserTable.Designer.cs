@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace APIAUTH.Data.Migrations
 {
     [DbContext(typeof(AuthContext))]
-    [Migration("20241028141346_2.0.3.newEntities")]
-    partial class _203newEntities
+    [Migration("20241112041100_3.0.0.updateUserTable")]
+    partial class _300updateUserTable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -33,6 +33,10 @@ namespace APIAUTH.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("BackupEmail")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("CollaboratorTypeId")
                         .HasColumnType("int");
 
@@ -43,6 +47,10 @@ namespace APIAUTH.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("DocumentType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -261,16 +269,11 @@ namespace APIAUTH.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("BackupEmail")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<bool>("IsGeneric")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Password")
                         .IsRequired()
