@@ -9,7 +9,7 @@ namespace APIAUTH.Aplication.Interfaces
     public interface IAuthenticationService
     {
         Task<(string idToken, string accessToken, string refreshToken)> AuthenticateUserAsync(string username, string password);
-        Task<(string idToken, string accessToken, string refreshToken)> AuthenticateWithGoogleAsync(string authorizationCode);
+        Task<(string idToken, string accessToken, string refreshToken)> AuthenticateWithGoogleAsync(string idTokenGoogle);
         Task<(string idToken, string accessToken, string refreshToken)> RefreshTokensAsync(string refreshToken);
     }
 }

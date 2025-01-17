@@ -35,7 +35,7 @@ namespace APIAUTH.Server.Controllers
         }
 
         [HttpPost("loginSSO")]
-        public async Task<IActionResult> LoginSSO(string authorizationCode)
+        public async Task<IActionResult> LoginSSO(string idTokenGoogle)
         {
             if (!ModelState.IsValid)
             {
@@ -44,7 +44,7 @@ namespace APIAUTH.Server.Controllers
 
             try
             {
-                var tokens = await _authenticationService.AuthenticateWithGoogleAsync(authorizationCode);
+                var tokens = await _authenticationService.AuthenticateWithGoogleAsync(idTokenGoogle);
                 return Ok(new { idToken = tokens.idToken, accessToken = tokens.accessToken });
             }
             catch (Exception ex)

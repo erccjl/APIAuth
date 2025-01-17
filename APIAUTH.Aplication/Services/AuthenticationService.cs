@@ -101,16 +101,10 @@ namespace APIAUTH.Aplication.Services
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        public async Task<(string idToken, string accessToken, string refreshToken)> AuthenticateWithGoogleAsync(string authorizationCode)
+        public async Task<(string idToken, string accessToken, string refreshToken)> AuthenticateWithGoogleAsync(string idTokenGoogle)
         {
-            //var responseData = await GetAccessByGoogle(authorizationCode);
-
-/*            if (responseData == null)
-            {
-                throw new Exception("Error al deserializar la respuesta del token de Google.");
-            }*/
-
-            string email = GetEmailFromIdToken(authorizationCode);
+          
+            string email = GetEmailFromIdToken(idTokenGoogle);
 
             var collaborator =  _userRepository.GetByEmail(email);
 

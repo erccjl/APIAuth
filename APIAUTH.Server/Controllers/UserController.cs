@@ -34,21 +34,21 @@ namespace APIAUTH.Server.Controllers
 
         }
 
-        [HttpPost("changePassword")]
-        public async Task<IActionResult> ChangePassword([FromBody] UserDto dto)
+        [HttpPut("change-password")]
+        public async Task<IActionResult> ChangePassword(UserPasswordDto userPasswordDto)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
+
             try
-            {
-                await _userService.ChangePassword(dto);
-                return Ok();
+            {               
+                return Ok(await _userService.ChangePassword(userPasswordDto));
             }
             catch (Exception ex)
             {
-                return BadRequest(ex);
+                return BadRequest(ex.Message);
             }
 
         }

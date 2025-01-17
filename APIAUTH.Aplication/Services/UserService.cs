@@ -69,20 +69,26 @@ namespace APIAUTH.Aplication.Services
 
         }
 
-        public async Task<bool> ChangePassword(UserDto dto)
+        public async Task<bool> ChangePassword(UserPasswordDto dto)
         {
-            var user = await _repository.Get(dto.Id);
-            if (user != null)
+            var collaborator =  _repository.GetByEmail(dto.Email);
+            if (collaborator != null  && collaborator.User != null)
             {
-                user.Password = dto.Password;
-                user.PasswordDate = DateTime.Now;
-                user.IsGenericPassword = false;
-                return await _repository.Update(user) != null;
+                if (await _repository.ValidatePasswordAsync(collaborator.User, dto.CurrentPassword))
+                {
+                    var user = collaborator.User;
+                    user.Password = BCrypt.Net.BCrypt.HashPassword(dto.NewPassword); 
+                    user.PasswordDate = DateTime.Now;
+                    user.IsGenericPassword = false;
+                    return await _repository.Update(user) != null;
+                }
+                else
+                {
+                    return false;
+                }
             }
-            else
-            {
-                return false; //TODO: ver que se puede devolver en este punto
-            }
+
+            return false;
         }
     }
 }
