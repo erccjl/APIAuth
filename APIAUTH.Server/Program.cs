@@ -7,9 +7,10 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using Microsoft.Extensions.Configuration;
 using APIAUTH.Aplication.Mapper;
 using APIAUTH.Aplication.Policies;
+using APIAUTH.Infrastructure.Services;
+using APIAUTH.Infrastructure.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,7 +28,7 @@ builder.Services.AddAutoMapper(typeof(UserProfile));
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ICollaboratorService, CollaboratorService>();
-
+builder.Services.AddScoped<NotificationService>();
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(GenericRepository<>));
@@ -59,6 +60,8 @@ builder.Services.AddAuthorization(options =>
     AuthorizationPolicies.ConfigurePolicies(options);
 });
 
+builder.Services.AddSignalR();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -73,6 +76,9 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.UseCors("AllowAll");
+
+app.MapHub<NotificationHub>("/notificationHub");
+
 
 app.MapControllers();
 

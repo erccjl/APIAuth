@@ -3,13 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35303.130
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "APIAUTH.Server", "APIAUTH.Server\APIAUTH.Server.csproj", "{CC307E88-07B7-4B6A-8824-65BABB3E10CA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "APIAUTH.Server", "APIAUTH.Server\APIAUTH.Server.csproj", "{CC307E88-07B7-4B6A-8824-65BABB3E10CA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "APIAUTH.Domain", "APIAUTH.Domain\APIAUTH.Domain.csproj", "{FE032C8D-B23F-498A-B10B-F63E2EC79243}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "APIAUTH.Domain", "APIAUTH.Domain\APIAUTH.Domain.csproj", "{FE032C8D-B23F-498A-B10B-F63E2EC79243}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "APIAUTH.Data", "APIAUTH.Data\APIAUTH.Data.csproj", "{3091EE84-1C51-4447-AAED-B5D855C6D747}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "APIAUTH.Data", "APIAUTH.Data\APIAUTH.Data.csproj", "{3091EE84-1C51-4447-AAED-B5D855C6D747}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "APIAUTH.Aplication", "APIAUTH.Aplication\APIAUTH.Aplication.csproj", "{1B82F22E-3E62-4AE7-AD51-F617D9A4F81C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "APIAUTH.Aplication", "APIAUTH.Aplication\APIAUTH.Aplication.csproj", "{1B82F22E-3E62-4AE7-AD51-F617D9A4F81C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "APIAUTH.Infrastructure", "APIAUTH.Infrastructure\APIAUTH.Infrastructure.csproj", "{4899ED90-D76D-4246-919E-265B6024957D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{1B82F22E-3E62-4AE7-AD51-F617D9A4F81C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1B82F22E-3E62-4AE7-AD51-F617D9A4F81C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1B82F22E-3E62-4AE7-AD51-F617D9A4F81C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4899ED90-D76D-4246-919E-265B6024957D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4899ED90-D76D-4246-919E-265B6024957D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4899ED90-D76D-4246-919E-265B6024957D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4899ED90-D76D-4246-919E-265B6024957D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

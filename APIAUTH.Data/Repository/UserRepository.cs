@@ -73,15 +73,13 @@ namespace APIAUTH.Data.Repository
             return _context.Collaborators.Where(u => u.UserId == id)
                 .Include(u => u.CollaboratorType)
                 .Include(u => u.Organization)
+                .Include(u => u.Role)
                 .FirstOrDefault();
         }
 
-        public List<UserRole> GetRoles(int userId)
+        public List<Role> GetRoles()
         {
-            return _context.UserRoles
-                     .Where(ur => ur.UserId == userId)
-                     .Include(ur => ur.Role)
-                     .ToList();
+            return _context.Roles.ToList();
         }
 
         public async Task<User> GetUserByRefreshTokenAsync(string refreshToken)

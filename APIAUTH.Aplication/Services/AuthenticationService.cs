@@ -27,13 +27,14 @@ namespace APIAUTH.Aplication.Services
         public async Task<(string idToken, string accessToken, string refreshToken)> AuthenticateUserAsync(string username, string password)
         {
             var user = await _userRepository.GetByUsernameAsync(username);
-            if (user == null || !await _userRepository.ValidatePasswordAsync(user, password) || user.StateUser != StateUser.Activo)
+            var collaborator = _userRepository.GetCollaboratorByIdUser(user.Id);
+            if (user == null || !await _userRepository.ValidatePasswordAsync(user, password) || collaborator.State != Domain.Enums.BaseState.Activo)
             {
                 throw new UnauthorizedAccessException("Invalid credentials.");
             }
 
-            var idToken = GenerateIdToken(user);
-            var accessToken = GenerateAccessToken(user);
+            var idToken = GenerateIdToken(collaborator);
+            var accessToken = GenerateAccessToken(collaborator);
             var refreshToken = GenerateRefreshToken();
 
             SaveRefreshTokenAsync(user.Id, refreshToken);
@@ -41,15 +42,15 @@ namespace APIAUTH.Aplication.Services
             return (idToken, accessToken, refreshToken);
         }
 
-        private string GenerateIdToken(User user)
+        private string GenerateIdToken(Collaborator collaborator)
         {
-            var collaborator = _userRepository.GetCollaboratorByIdUser(user.Id);
             var collaboratorType = Enum.Parse<CollaboratorTypeEnum>(collaborator.CollaboratorType.Description);
             var claims = new[]
             {
-                new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
+                new Claim(JwtRegisteredClaimNames.Sub, collaborator.User.UserName),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64),
+                new Claim("idUser", collaborator.Id.ToString()),
                 new Claim("Name", $"{collaborator.LastName}, {collaborator.Name}"),
                 new Claim("isInternal", (collaboratorType == CollaboratorTypeEnum.Internal).ToString()),
                 new Claim("email", collaborator.Email),
@@ -69,23 +70,16 @@ namespace APIAUTH.Aplication.Services
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        private string GenerateAccessToken(User user)
+        private string GenerateAccessToken(Collaborator collaborator)
         {
-            var collaborator = _userRepository.GetCollaboratorByIdUser(user.Id);
-            var userRoles = _userRepository.GetRoles(user.Id);
+            
             var claims = new List<Claim>
             {
-                new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+                new Claim(JwtRegisteredClaimNames.Sub, collaborator.User.UserName),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(ClaimTypes.Role, collaborator.Role.Description)
             };
 
-            if (userRoles != null && userRoles.Any())
-            {
-                foreach (var role in userRoles)
-                {
-                    claims.Add(new Claim(ClaimTypes.Role, role.Role.Description));
-                }
-            }
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -108,13 +102,13 @@ namespace APIAUTH.Aplication.Services
 
             var collaborator =  _userRepository.GetByEmail(email);
 
-            if (collaborator == null || collaborator.State == BaseState.Inactivo)
+            if (collaborator == null || collaborator.State != BaseState.Activo)
             {
                 throw new UnauthorizedAccessException("Invalid credentials.");
             }
 
-            var idToken = GenerateIdToken(collaborator.User);
-            var accessToken = GenerateAccessToken(collaborator.User);
+            var idToken = GenerateIdToken(collaborator);
+            var accessToken = GenerateAccessToken(collaborator);
             var refreshToken = GenerateRefreshToken();
 
             SaveRefreshTokenAsync(collaborator.UserId, refreshToken);
@@ -180,6 +174,8 @@ namespace APIAUTH.Aplication.Services
         public async Task<(string idToken, string accessToken, string refreshToken)> RefreshTokensAsync(string refreshToken)
         {
             var user = await _userRepository.GetUserByRefreshTokenAsync(refreshToken);
+            var collaborator = _userRepository.GetCollaboratorByIdUser(user.Id);
+
 
             if (user == null || user.StateUser != StateUser.Activo)
             {
@@ -191,8 +187,8 @@ namespace APIAUTH.Aplication.Services
                 throw new UnauthorizedAccessException("Refresh token has expired.");
             }
 
-            var idToken = GenerateIdToken(user);
-            var accessToken = GenerateAccessToken(user);
+            var idToken = GenerateIdToken(collaborator);
+            var accessToken = GenerateAccessToken(collaborator);
 
             var newRefreshToken = GenerateRefreshToken();
             SaveRefreshTokenAsync(user.Id, newRefreshToken);

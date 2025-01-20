@@ -15,6 +15,7 @@ namespace APIAUTH.Aplication.Interfaces
         Task Activate(int id);
         Task Inactivate(int id);
         Task<TDto> Save(TDto dto);
+        Task<List<TDto>> GetAll();
         Task<(bool isValid, string message)> Validate(int? id, TDto dto);
     }
 }

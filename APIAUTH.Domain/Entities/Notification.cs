@@ -8,8 +8,9 @@ namespace APIAUTH.Domain.Entities
 {
     public class Notification : BaseEntity
     {
-        public string Description { get; set; }
-
-
+        public int Id { get; set; }
+        public string Message { get; set; }
+        public string UserId { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }

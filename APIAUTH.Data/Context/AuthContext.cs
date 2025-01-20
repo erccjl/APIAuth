@@ -20,14 +20,21 @@ namespace APIAUTH.Data.Context
         public DbSet<User> Users { get; set; }
         public DbSet<Organization> Organizations { get; set; }
         public DbSet<Role> Roles { get; set; }
-        public DbSet<UserRole> UserRoles { get; set; }
         public DbSet<CollaboratorType> CollaboratorTypes { get; set; }
         public DbSet<Notification> Notifications { get; set; }
-        public DbSet<NotificationUser> NotificationUsers { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Collaborator>()
+                       .Navigation(e => e.Role)
+                       .AutoInclude();
+            modelBuilder.Entity<Collaborator>()
+                       .Navigation(e => e.Organization)
+                       .AutoInclude();
+            modelBuilder.Entity<Collaborator>()
+                       .Navigation(e => e.User)
+                       .AutoInclude();
             base.OnModelCreating(modelBuilder);
         }
     }

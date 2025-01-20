@@ -24,6 +24,14 @@ namespace APIAUTH.Server.Controllers
             return Ok(result);
         }
 
+        [HttpGet("GetAll")]
+        public virtual async Task<ActionResult<List<TDto>>> GetAll()
+        {
+            var result = await _entityService.GetAll();
+            if (result == null) return NotFound();
+            return Ok(result);
+        }
+
         [HttpPost("")]
         public virtual async Task<IActionResult> Post([FromBody] TDto dto)
         {

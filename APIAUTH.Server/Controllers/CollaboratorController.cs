@@ -22,5 +22,18 @@ namespace APIAUTH.Server.Controllers
         {
             return Ok(await _collaboratorService.PutImage(image));
         }
+
+        [HttpGet("GetRoles")]
+        public async Task<IActionResult> GetRoles()
+        {
+            return Ok(await _collaboratorService.GetRoles());
+        }
+
+        [HttpPost("Blocked")]
+        public async Task<IActionResult> Blocked(int id)
+        {
+            await _collaboratorService.Blocked(id);
+            return Ok();
+        }
     }
 }

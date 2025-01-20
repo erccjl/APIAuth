@@ -10,6 +10,7 @@ namespace APIAUTH.Domain.Enums
     {
         Activo = 1,
         Inactivo,
-        Eliminado
+        Eliminado,
+        Bloquado
     }
 }

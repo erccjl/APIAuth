@@ -11,7 +11,8 @@ namespace APIAUTH.Aplication.Interfaces
     {
         Task<bool> Exists(int id);
         Task<UserDto> Save(CollaboratorDto dto);
-        Task RecoverPassword(string email, string password);
+        Task RecoverPassword(string email);
         Task<bool> ChangePassword(UserPasswordDto dto);
+        Task<UserDto> ActivePassword(CollaboratorDto? collaborator);
     }
 }

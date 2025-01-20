@@ -15,6 +15,8 @@ namespace APIAUTH.Aplication.Mapper
         {
             CreateMap<CollaboratorDto, Collaborator>()
                 .ReverseMap();
+
+            CreateMap<Role, RoleDto>().ReverseMap();
         }
     }
 }

@@ -16,7 +16,7 @@ namespace APIAUTH.Domain.Repository
         Task<User> GetByUsernameAsync(string username);
         Task<bool> ValidatePasswordAsync(User user, string password);
         Collaborator GetCollaboratorByIdUser(int id);
-        List<UserRole> GetRoles(int userId);
+        List<Role> GetRoles();
         Task<User> GetUserByRefreshTokenAsync(string refreshToken);
     }
 }

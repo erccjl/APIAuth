@@ -31,10 +31,18 @@ namespace APIAUTH.Data.Repository
 
         public async Task<TEntity> Update(TEntity item)
         {
-            var localEntity = _dbSet.Local.FirstOrDefault(x => x.Id == item.Id);
-            if (localEntity != null)
-                _context.Entry(localEntity).State = EntityState.Detached;
+            var existingEntity = _context.ChangeTracker.Entries<TEntity>()
+            .FirstOrDefault(e => e.Entity.Id == item.Id)?.Entity;
+
+            if (existingEntity != null)
+            {
+                // Detach la entidad existente para evitar conflictos
+                _context.Entry(existingEntity).State = EntityState.Detached;
+            }
+            // Adjunta la entidad y marca su estado como modificado
+            _dbSet.Attach(item);
             _context.Entry(item).State = EntityState.Modified;
+
             await Save();
             return item;
         }

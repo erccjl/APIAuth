@@ -40,7 +40,7 @@ namespace APIAUTH.Aplication.Services
             }
             catch (FormatException ex)
             {
-                //TODO: Agregar la respuesta de la excepcion
+                throw new Exception(ex.Message);
             }
 
             return _mapper.Map<UserDto>(user);
@@ -51,44 +51,47 @@ namespace APIAUTH.Aplication.Services
          * Alerta de vencimiento de contraseña (DEJAR PARA EL FINAL) con el campo PasswordDate
          */
 
-        public async Task RecoverPassword(string email, string password)
+        public async Task RecoverPassword(string email)
         {
-            //TODO: Ver que se puede hacer en este punto para mejorar la seguridad
-            // Quizas mandar por mail para validar la identidad o verificar el mail de la persona con mas datos que solo el email
             var collaborator = _repository.GetByEmail(email);
             if (collaborator == null || collaborator.State == Domain.Enums.BaseState.Activo)
             {
                 throw new UnauthorizedAccessException("User is non-existent");
             }
-            var user = await _repository.Get(collaborator.UserId);
 
-            user.Password = BCrypt.Net.BCrypt.HashPassword(password);
-            user.PasswordDate = DateTime.Now;
-            user.IsGenericPassword = false;
-            await _repository.Update(user);
-
+            //TODO: Se debe bloquear al usuario y devolver el id del usuario administrador
         }
 
         public async Task<bool> ChangePassword(UserPasswordDto dto)
         {
-            var collaborator =  _repository.GetByEmail(dto.Email);
-            if (collaborator != null  && collaborator.User != null)
+            var collaborator = _repository.GetByEmail(dto.Email);
+            if (collaborator != null && collaborator.User != null)
             {
                 if (await _repository.ValidatePasswordAsync(collaborator.User, dto.CurrentPassword))
                 {
                     var user = collaborator.User;
-                    user.Password = BCrypt.Net.BCrypt.HashPassword(dto.NewPassword); 
+                    user.Password = BCrypt.Net.BCrypt.HashPassword(dto.NewPassword);
                     user.PasswordDate = DateTime.Now;
                     user.IsGenericPassword = false;
                     return await _repository.Update(user) != null;
                 }
                 else
                 {
-                    return false;
+                    throw new UnauthorizedAccessException("Incorrect Password");
                 }
             }
 
-            return false;
+            throw new UnauthorizedAccessException("User is non-existent");
+        }
+
+        public async Task<UserDto> ActivePassword(CollaboratorDto? collaborator)
+        {
+            var user = collaborator.User;
+            user.Password = BCrypt.Net.BCrypt.HashPassword(collaborator.DocumentNamber.ToString());
+            user.IsGenericPassword = true;
+            user.PasswordDate = DateTime.Now;
+
+            return user;
         }
     }
 }

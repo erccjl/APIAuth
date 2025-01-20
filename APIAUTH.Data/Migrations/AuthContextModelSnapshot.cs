@@ -44,14 +44,13 @@ namespace APIAUTH.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("DocumentType")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("EndDate")
+                    b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("LastName")
@@ -66,11 +65,14 @@ namespace APIAUTH.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("OrganizationId")
+                    b.Property<int?>("OrganizationId")
                         .HasColumnType("int");
 
                     b.Property<string>("Photo")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
@@ -89,6 +91,8 @@ namespace APIAUTH.Data.Migrations
                     b.HasIndex("CollaboratorTypeId");
 
                     b.HasIndex("OrganizationId");
+
+                    b.HasIndex("RoleId");
 
                     b.HasIndex("UserId");
 
@@ -147,7 +151,7 @@ namespace APIAUTH.Data.Migrations
                     b.ToTable("Notifications");
                 });
 
-            modelBuilder.Entity("APIAUTH.Domain.Entities.NotificationUser", b =>
+            modelBuilder.Entity("APIAUTH.Domain.Entities.NotificationQueus", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -293,38 +297,6 @@ namespace APIAUTH.Data.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("APIAUTH.Domain.Entities.UserRole", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("RoleId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("State")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("UpdatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RoleId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("UserRoles");
-                });
-
             modelBuilder.Entity("APIAUTH.Domain.Entities.Collaborator", b =>
                 {
                     b.HasOne("APIAUTH.Domain.Entities.CollaboratorType", "CollaboratorType")
@@ -335,7 +307,11 @@ namespace APIAUTH.Data.Migrations
 
                     b.HasOne("APIAUTH.Domain.Entities.Organization", "Organization")
                         .WithMany("Collaborators")
-                        .HasForeignKey("OrganizationId")
+                        .HasForeignKey("OrganizationId");
+
+                    b.HasOne("APIAUTH.Domain.Entities.Role", "Role")
+                        .WithMany()
+                        .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -349,10 +325,12 @@ namespace APIAUTH.Data.Migrations
 
                     b.Navigation("Organization");
 
+                    b.Navigation("Role");
+
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("APIAUTH.Domain.Entities.NotificationUser", b =>
+            modelBuilder.Entity("APIAUTH.Domain.Entities.NotificationQueus", b =>
                 {
                     b.HasOne("APIAUTH.Domain.Entities.Notification", "Notification")
                         .WithMany()
@@ -367,25 +345,6 @@ namespace APIAUTH.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Notification");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("APIAUTH.Domain.Entities.UserRole", b =>
-                {
-                    b.HasOne("APIAUTH.Domain.Entities.Role", "Role")
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("APIAUTH.Domain.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Role");
 
                     b.Navigation("User");
                 });
