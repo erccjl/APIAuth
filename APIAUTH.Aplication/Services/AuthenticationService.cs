@@ -28,9 +28,17 @@ namespace APIAUTH.Aplication.Services
         {
             var user = await _userRepository.GetByUsernameAsync(username);
             var collaborator = _userRepository.GetCollaboratorByIdUser(user.Id);
-            if (user == null || !await _userRepository.ValidatePasswordAsync(user, password) || collaborator.State != Domain.Enums.BaseState.Activo)
+            if (user == null )
             {
-                throw new UnauthorizedAccessException("Invalid credentials.");
+                throw new UnauthorizedAccessException("El usuario con el que desea ingresar no existe.");
+            }
+            if (!await _userRepository.ValidatePasswordAsync(user, password))
+            {
+                throw new UnauthorizedAccessException("La contraseña con la que desea ingresar es incorrecta.");
+            }
+            if(collaborator.State != Domain.Enums.BaseState.Activo)
+            {
+                throw new UnauthorizedAccessException("El usuario no se encuentra activo en este momento.");
             }
 
             var idToken = GenerateIdToken(collaborator);
@@ -77,7 +85,9 @@ namespace APIAUTH.Aplication.Services
             {
                 new Claim(JwtRegisteredClaimNames.Sub, collaborator.User.UserName),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(ClaimTypes.Role, collaborator.Role.Description)
+                new Claim(ClaimTypes.Role, collaborator.Role.Description),
+                new Claim("isGenericPassword", collaborator.User.IsGenericPassword.ToString()),
+
             };
 
 
@@ -102,9 +112,13 @@ namespace APIAUTH.Aplication.Services
 
             var collaborator =  _userRepository.GetByEmail(email);
 
-            if (collaborator == null || collaborator.State != BaseState.Activo)
+            if (collaborator == null)
             {
-                throw new UnauthorizedAccessException("Invalid credentials.");
+                throw new UnauthorizedAccessException("El usuario con el que desea ingresar no existe.");
+            }
+            if (collaborator.State != Domain.Enums.BaseState.Activo)
+            {
+                throw new UnauthorizedAccessException("El usuario no se encuentra activo en este momento.");
             }
 
             var idToken = GenerateIdToken(collaborator);

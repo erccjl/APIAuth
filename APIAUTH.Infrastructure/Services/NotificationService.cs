@@ -1,10 +1,4 @@
-﻿
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using APIAUTH.Infrastructure.SignalR;
+﻿using APIAUTH.Infrastructure.SignalR;
 using Microsoft.AspNetCore.SignalR;
 
 namespace APIAUTH.Infrastructure.Services
@@ -20,12 +14,25 @@ namespace APIAUTH.Infrastructure.Services
 
         public async Task NotifyAll(string message)
         {
-            await _hubContext.Clients.All.SendAsync("ReceiveMessage", message);
+            var notification = new
+            {
+                Title = "Nueva Notificación",
+                Message = message,
+                Timestamp = DateTime.UtcNow
+            };
+            await _hubContext.Clients.All.SendAsync("ReceiveNotification", notification);
         }
 
         public async Task NotifyUser(string userId, string message)
         {
-            await _hubContext.Clients.User(userId).SendAsync("ReceiveMessage", message);
+            var notification = new
+            {
+                Title = "Nueva Notificación",
+                Message = message,
+                Timestamp = DateTime.UtcNow
+            };
+      
+            await _hubContext.Clients.User(userId).SendAsync("ReceiveNotification", message);
         }
     }
 }

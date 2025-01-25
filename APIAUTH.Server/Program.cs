@@ -50,8 +50,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll", builder =>
-        builder.AllowAnyOrigin()
+    options.AddPolicy("AllowSpecificOrigins", builder =>
+       builder.WithOrigins("http://localhost:5173")
+                .AllowCredentials()
                .AllowAnyMethod()
                .AllowAnyHeader());
 });
@@ -75,7 +76,7 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
-app.UseCors("AllowAll");
+app.UseCors("AllowSpecificOrigins");
 
 app.MapHub<NotificationHub>("/notificationHub");
 

@@ -15,7 +15,7 @@ namespace APIAUTH.Server.Controllers
         }
 
         [HttpPost("broadcast")]
-        public async Task<IActionResult> Broadcast([FromBody] string message)
+        public async Task<IActionResult> Broadcast(string message)
         {
             await _notificationService.NotifyAll(message);
             return Ok("Notification sent to all users.");
